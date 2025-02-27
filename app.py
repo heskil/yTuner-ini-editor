@@ -23,7 +23,7 @@ def getValues():
 
 @app.route("/getPath", methods=['GET'])
 def getPath():
-    return fileReader.getPath(), 200
+    return str(fileReader.getPath()), 200
 
 @app.route("/setPath", methods=["POST"])
 def setPath():

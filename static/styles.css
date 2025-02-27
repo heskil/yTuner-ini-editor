@@ -9,9 +9,31 @@ h1 {
     text-align: center;
 }
 
+.catButt {
+    margin: 0;
+    font-size: 1.5vw;
+}
+
 table {
     margin: auto;
     width: 80%;
+}
+
+#pathContainer {
+    width: 100%;
+    margin-left: 10%;
+}
+
+.trash {
+    fill: #c5c5c5;
+    float: right;
+    size: 10%;
+}
+
+.celly {
+    background-color: #868282;
+    color:#1b1b1b;
+    border-color: #1b1b1b;
 }
 
 p,th,td {
@@ -23,6 +45,19 @@ p,th,td {
 
 td {
     border: 1px solid;
+	height: 50px;
+	padding-top: 10px;
+	line-height: 22px;
+}
+
+.lefty {
+    float: left;
+}
+
+.righty {
+    float:right;
+    margin: 0;
+    padding: 0;
 }
 
 .category {

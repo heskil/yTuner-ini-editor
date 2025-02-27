@@ -21,18 +21,17 @@
   </head>
   <body>
     <h1>yTuner Categories</h1>
-    <div class="container">
-      <button class="button" onclick="openPathDialog()">set file path</button>
+    <div class="container" id="pathContainer">
+      <input
+        type="button"
+        class="button"
+        onclick="openPathDialog()"
+        value="set file path"
+      />
       <div id="pathPopUp" class="container"></div>
     </div>
-    <p>remember to add setting of new file path</p>
     <div class="container">
       <table id="bigTable"></table>
     </div>
-    <form action="http://localhost:8000/refresh" method="get">
-      <p>Enter Name:</p>
-      <p><input type="text" name="nm" /></p>
-      <p><input type="submit" value="submit" /></p>
-    </form>
   </body>
 </html>
