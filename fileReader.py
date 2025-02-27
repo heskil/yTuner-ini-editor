@@ -1,9 +1,10 @@
 # fileReader.py
 import json
-import string
+from pathlib import Path
 from collections import defaultdict
 
 # default value for path to stations.ini
+# TODO change path!
 iniPath = "/home/amelie/Downloads/stations.ini"
 # file structure that keeps track of categories and channels
 values=defaultdict(list)
@@ -16,7 +17,10 @@ def getValues():
     return json.dumps(values)
 
 def setPath(self,newPath):
-    self.iniPath = newPath
+    path = Path(newPath)
+    file = open(path, "r")
+    file.close()
+    self.iniPath = path
 
 def readIni() :
     # Open the file in read mode

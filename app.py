@@ -4,7 +4,6 @@ from flask import Flask, render_template, request, jsonify # type: ignore
 import fileReader # type: ignore
 
 app = Flask(__name__)
-# TODO in frontend: always readIni as first task, handle if path not found
 
 @app.route("/")
 def home():
@@ -26,8 +25,12 @@ def getValues():
 def setPath():
     # takes json with path as key
     json = request.get_json()
-    fileReader.setPath(fileReader,json["path"])
-    return "Path set successfully to " + json["path"], 200
+    try:
+        fileReader.setPath(fileReader,json["path"])
+        return "Path set successfully to " + json["path"], 200
+    except FileNotFoundError:
+        return "No ini found under this path", 400
+    
 
 # adds a category, or renames an existing one
 @app.route("/addCategory", methods=["POST"])
