@@ -1,4 +1,5 @@
 let backendUrl = "http://localhost:8000/";
+//let backendUrl = "http://192.168.2.118:8000/";
 
 function getValues(message) {
   return new Promise((resolve) => {
@@ -13,6 +14,43 @@ function getValues(message) {
     request.open("GET", backendUrl + "/getValues");
     request.send();
   });
+}
+
+function openPathDialog() {
+  let div = document.getElementById("pathPopUp");
+
+  let textBox = document.createElement("paragraph");
+  textBox.innerHTML = "enter the full path to the stations.ini file";
+  div.appendChild(textBox);
+
+  let form = document.createElement("form");
+  form.setAttribute("method", "post");
+  form.setAttribute("action", "javascript:setPath()");
+
+  var path = document.createElement("input");
+  path.setAttribute("type", "text");
+  path.setAttribute("name", "filepath");
+  path.setAttribute("placeholder", "/home/Documents/stations.ini");
+
+  var submit = document.createElement("input");
+  submit.setAttribute("type", "submit");
+  submit.setAttribute("value", "Submit");
+
+  form.appendChild(path);
+  form.appendChild(submit);
+  div.appendChild(form);
+}
+
+function setPath() {
+  // TODO send new path to backend, wait if valid, update with error if not
+  let div = document.getElementById("pathPopUp");
+  console.log("path is being sent to backend, result tbd");
+  // if all went right just throw response back to user
+  div.innerHTML = "";
+  let par = document.createElement("paragraph");
+  par.innerHTML = "set path to " + "/placeholder/path/stations.ini";
+  div.appendChild(par);
+  // if error: make new element that says sth went wrong
 }
 
 async function handleRefresh() {

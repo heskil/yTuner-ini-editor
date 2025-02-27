@@ -27,7 +27,7 @@ def setPath():
     json = request.get_json()
     try:
         fileReader.setPath(fileReader,json["path"])
-        return "Path set successfully to " + json["path"], 200
+        return json["path"], 200
     except FileNotFoundError:
         return "No ini found under this path", 400
     
