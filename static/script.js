@@ -34,15 +34,31 @@ function openPathDialog() {
   path.setAttribute("type", "text");
   path.setAttribute("name", "filepath");
   // TODO set placeholder value to actual value
-  path.setAttribute("placeholder", "/home/Documents/stations.ini");
 
-  var submit = document.createElement("input");
-  submit.setAttribute("type", "submit");
-  submit.setAttribute("value", "Submit");
+  getPath().then((result) => {
+    path.setAttribute("placeholder", result);
 
-  form.appendChild(path);
-  form.appendChild(submit);
-  div.appendChild(form);
+    var submit = document.createElement("input");
+    submit.setAttribute("type", "submit");
+    submit.setAttribute("value", "Submit");
+
+    form.appendChild(path);
+    form.appendChild(submit);
+    div.appendChild(form);
+  });
+}
+
+function getPath() {
+  return new Promise((resolve) => {
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = () => {
+      if (request.readyState === 4) {
+        resolve(request.responseText);
+      }
+    };
+    request.open("GET", backendUrl + "getPath");
+    request.send();
+  });
 }
 
 function setPath() {
