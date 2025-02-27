@@ -9,8 +9,8 @@ iniPath = "/home/amelie/Downloads/stations.ini"
 # file structure that keeps track of categories and channels
 values=defaultdict(list)
 
-
-# TODO endpoint for setting new ini file path, maybe with file open dialog!!!
+def getPath():
+    return iniPath
 
 def getValues():
     # Return the content

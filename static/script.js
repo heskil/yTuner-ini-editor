@@ -16,20 +16,24 @@ function getValues(message) {
   });
 }
 
+// TODO FIX! makes multiple instances!
 function openPathDialog() {
   let div = document.getElementById("pathPopUp");
+  div.innerHTML = "";
 
   let textBox = document.createElement("paragraph");
   textBox.innerHTML = "enter the full path to the stations.ini file";
   div.appendChild(textBox);
 
   let form = document.createElement("form");
+  form.setAttribute("id", "pathForm");
   form.setAttribute("method", "post");
   form.setAttribute("action", "javascript:setPath()");
 
   var path = document.createElement("input");
   path.setAttribute("type", "text");
   path.setAttribute("name", "filepath");
+  // TODO set placeholder value to actual value
   path.setAttribute("placeholder", "/home/Documents/stations.ini");
 
   var submit = document.createElement("input");
@@ -44,13 +48,52 @@ function openPathDialog() {
 function setPath() {
   // TODO send new path to backend, wait if valid, update with error if not
   let div = document.getElementById("pathPopUp");
+  var formData = new FormData(document.getElementById("pathForm"));
+  console.log("data from form is ");
+  console.log(formData.entries("filepath"));
   console.log("path is being sent to backend, result tbd");
-  // if all went right just throw response back to user
+
+  // only one value
+  let data = "";
+  for (let keyValue of formData.entries()) {
+    data = keyValue[1];
+  }
+
+  sendPath(data).then((result) => buildPathResponse(result));
+}
+
+function buildPathResponse(result) {
+  let div = document.getElementById("pathPopUp");
+  // gives feedback about path status to user
   div.innerHTML = "";
   let par = document.createElement("paragraph");
-  par.innerHTML = "set path to " + "/placeholder/path/stations.ini";
+  par.innerHTML = result;
   div.appendChild(par);
-  // if error: make new element that says sth went wrong
+}
+
+function sendPath(formData) {
+  console.log("sending this data to backend");
+  console.log(formData);
+  return new Promise((resolve) => {
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = () => {
+      if (request.readyState === 4) {
+        //
+        if (request.status == 200) {
+          resolve("set path to " + request.responseText);
+        } else {
+          resolve("could not find stations.ini at this location");
+        }
+      }
+    };
+    request.open("POST", backendUrl + "setPath");
+    request.setRequestHeader("Content-type", "application/json");
+    request.send('{"path":"' + formData + '"}');
+  });
+}
+
+function createTableFormRow() {
+  // TODO make functon so code is cleaner
 }
 
 async function handleRefresh() {
@@ -74,22 +117,6 @@ function buildTable(message, values) {
   console.log(Object.keys(json));
 
   let keys = Object.keys(json);
-  /*for (let cat in keys) {
-    let row = table.insertRow();
-    let category = row.insertCell(0);
-    category.innerHTML = keys[cat];
-
-    let listInCat = json[cat];
-    console.log("list of vals in cat");
-    console.log(listInCat);
-    for (let channelPair in listInCat) {
-      let row = table.insertRow();
-      let channel = row.insertCell(0);
-      let url = row.insertCell(1);
-      channel.innerHTML = channelPair[0];
-      url.innerHTML = channelPair[1];
-    }
-  } */
   keys.forEach(function (key) {
     let row = table.insertRow();
     let category = row.insertCell(0);
@@ -107,15 +134,6 @@ function buildTable(message, values) {
     //console.log("Key : " + key + ", Value : " + values[key]);
   });
 }
-
-/* function insertRow() {
-  let table = document.getElementById("bigTable");
-  let row = table.insertRow();
-  let channel = row.insertCell(0);
-  let url = row.insertCell(1);
-  channel.innerHTML = "bigBlueSwing";
-  url.innerHTML = "http://bigblueswing.com";
-} */
 
 function refresh(message) {
   return new Promise((resolve) => {
