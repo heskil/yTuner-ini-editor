@@ -21,6 +21,10 @@ def refresh():
 def getValues():
     return fileReader.getValues(), 200
 
+@app.route("/getPath", methods=['GET'])
+def getValues():
+    return fileReader.getPath(), 200
+
 @app.route("/setPath", methods=["POST"])
 def setPath():
     # takes json with path as key
