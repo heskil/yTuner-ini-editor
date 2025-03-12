@@ -14,6 +14,11 @@ def getPath():
 
 def getValues():
     # Return the content
+    print("[py] values is")
+    print(values)
+    print("[py] jsonified values is ")
+    print(json.dumps(values))
+    print("[py] end of json.dumps")
     return json.dumps(values)
 
 def setPath(self,newPath):
@@ -30,17 +35,29 @@ def readIni() :
     # Remove unnecessary spaces
     content = content.strip()
     # Splits values into list
-    list = content.split()
+    valList = content.split()
     # Close the file
     file.close()
 
+    values.clear()
     currCat = ""
-    for val in list:
+    for val in valList:
+        print("[py] reading ini")
+        print("[py] val is " + val)
         if (val[0] == "[" and val[len(val)-1] == "]") :
             # Initialize dict entry for category
+            print("[py] read category from file")
             currCat = val[1:len(val)-1]
+            # * is placeholder value for spaces
+            #currCat = currCat.replace("*"," ")
+            print("[py] new cat will be " + currCat)
             values[currCat] = []
+            print("[py] values should now have the cat, look:")
+            print("[py] " + str(values))
         else:
+            print("[py] read values from file")
+            # * is placeholder value for spaces
+            #val = val.replace("*"," ")
             # Split val into channel and channel url
             split = val.split("=")
             # Add value to category
@@ -51,6 +68,10 @@ def addCategory(category,newCategory):
     if newCategory == "" and not(category in values):
         # Adds new category
         values[category] = []
+        print("[py] adding category " + category)
+        print("[py] values is now")
+        print(values)
+        print("[py] end of values")
         return True
     elif newCategory != "" and category in values:
         # Renames an existing category
@@ -63,10 +84,13 @@ def addCategory(category,newCategory):
 
 # Deletes an existing category    
 def deleteCategory(category):
+    print("[py] deleting category " + category)
     if category in values:
         values.pop(category)
+        print("[py] deleted category " + category)
         return True
     else:
+        print("[py] " + category + "was not in values as category")
         return False
     
 # Adds a channel and URL to a category
@@ -118,8 +142,12 @@ def editChannelAndURL(category,channel,channelNew,urlNew):
 def writeToFile():
     out = ""
     for cat in values:
+        print("[py] writing to file")
+        print("[py]     written is " + "[" + cat + "]")
+        print("[py] values in printing method is " + str(values))
         out = out + ("[" + cat + "]\n")
         for channelAndUrl in values[cat]:
+            print("[py] channel and url is " + str(channelAndUrl))
             if len(channelAndUrl) == 2:
                 out = out + (channelAndUrl[0] + "=" + channelAndUrl[1] + "\n")
         out = out + "\n"

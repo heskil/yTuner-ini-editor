@@ -1,5 +1,6 @@
 let backendUrl = "http://localhost:8000/";
 //let backendUrl = "http://192.168.2.118:8000/";
+let categorycounter = 1;
 
 function getValues(message) {
   return new Promise((resolve) => {
@@ -8,6 +9,7 @@ function getValues(message) {
       if (request.readyState === 4) {
         let values = request.response;
         console.log(message);
+        console.log(values);
         resolve(values);
       }
     };
@@ -132,16 +134,21 @@ function buildTable(message, values) {
   let keys = Object.keys(json);
   // index for tracking place in table rows
   let index = 0;
+  console.log("@1");
   keys.forEach(function (key) {
     addRow(key, index);
     index = index + 1;
+    console.log("@2");
+    console.log("json after @2 is " + JSON.stringify(json));
     for (let line of json[key]) {
       let row = table.insertRow(index);
+      console.log("@3");
       index = index + 1;
       row.setAttribute("class", "celly");
       let channel = row.insertCell(0);
       let url = row.insertCell(1);
       channel.innerHTML = line[0];
+      console.log("@4");
       channel.setAttribute("class", "celly");
       url.innerHTML = line[1];
       url.setAttribute("class", "celly");
@@ -180,14 +187,15 @@ function addRow(key, index) {
   let butt = document.createElement("input");
   butt.setAttribute("class", "catButt");
   butt.setAttribute("type", "button");
-  butt.setAttribute("onclick", "deleteCategory('" + key + "')");
+  safeKey = safeSpaces(key);
+  butt.setAttribute("onclick", "deleteCategory('" + safeKey + "')");
   butt.setAttribute("value", "trash");
 
   let trash = document.createElement("img");
   trash.setAttribute("class", "trash");
   trash.setAttribute("src", "../static/trash.svg");
 
-  row.insertCell(1);
+  row.insertCell(1).setAttribute("class", "invisiCell");
 
   let catName = document.createElement("div");
   catName.setAttribute("class", "lefty");
@@ -202,18 +210,35 @@ function addRow(key, index) {
 }
 
 function addCategory() {
-  let table = document.getElementById("bigTable");
-  // TODO set to new input field
-  // TODO add cancel button
-  lastRow = document.getElementById("lastRowCatAdder");
-  let index = lastRow.rowIndex;
-  let newRow = table.insertRow(index);
-  let placeholderKey = "newCat";
-  addRow(placeholderKey, index);
+  // TODO Promise for sending
+  let placeholderKey = "newCategory" + categorycounter;
+  sendAddCategory(placeholderKey)
+    .then((result) => sendWrite(result))
+    .then(() => {
+      categorycounter = categorycounter + 1;
+    })
+    .then(() => {
+      // refreshing and updating values in frontend
+      refresh("refreshed from file")
+        .then(() => getValues("got values from data structure"))
+        .then((result) => buildTable("adjusted table values", result));
+    });
 }
 
-function helloWorld() {
-  console.log("component is triggering :)");
+function editCategory() {
+  // TODO safespaces
+}
+
+function addChannelUrl() {
+  // TODO safespaces
+}
+
+function helloWorld(string) {
+  if (string != null) {
+    console.log("component is triggering :) " + string);
+  } else {
+    console.log("component is triggering :)");
+  }
 }
 
 function createChannelUrlMask(key) {
@@ -226,9 +251,12 @@ function createChannelUrlMask(key) {
 
 function deleteCategory(category) {
   console.log("deleting category " + category);
+  console.log("need to reverse safe spaces first though");
+  console.log("@a");
   sendDeleteCategory(category)
     .then((result) => sendWrite(result))
     .then(() => {
+      console.log("@c");
       // refreshing and updating values in frontend
       refresh("refreshed from file")
         .then(() => getValues("got values from data structure"))
@@ -241,12 +269,38 @@ function sendWrite() {
     const request = new XMLHttpRequest();
     request.onreadystatechange = () => {
       if (request.readyState === 4) {
+        console.log("@bb");
         resolve();
       }
     };
+    console.log("@b");
     request.open("POST", backendUrl + "writeFile");
     request.send();
   });
+}
+
+function sendAddCategory(category) {
+  return new Promise((resolve) => {
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = () => {
+      if (request.readyState === 4) {
+        resolve(request.status);
+      }
+    };
+    request.open("POST", backendUrl + "addCategory");
+    console.log("add cat request incoming");
+    console.log(request);
+    // TODO comment back in if apostrophe breaks again
+    //category = safeSpaces(category);
+    console.log("adding category " + category);
+    request.setRequestHeader("Content-type", "application/json");
+    request.send('{"category":"' + category + '"}');
+  });
+}
+
+function safeSpaces(string) {
+  string = string.replace(/['"]/g, "\\$&");
+  return string.replace(/\s/g, "");
 }
 
 function sendDeleteCategory(category) {
@@ -258,7 +312,7 @@ function sendDeleteCategory(category) {
       }
     };
     request.open("POST", backendUrl + "deleteCategory");
-    console.log("request incoming");
+    console.log("del cat request incoming");
     console.log(request);
     request.setRequestHeader("Content-type", "application/json");
     request.send('{"category":"' + category + '"}');
