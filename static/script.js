@@ -134,21 +134,16 @@ function buildTable(message, values) {
   let keys = Object.keys(json);
   // index for tracking place in table rows
   let index = 0;
-  console.log("@1");
   keys.forEach(function (key) {
     addRow(key, index);
     index = index + 1;
-    console.log("@2");
-    console.log("json after @2 is " + JSON.stringify(json));
     for (let line of json[key]) {
       let row = table.insertRow(index);
-      console.log("@3");
       index = index + 1;
       row.setAttribute("class", "celly");
       let channel = row.insertCell(0);
       let url = row.insertCell(1);
       channel.innerHTML = line[0];
-      console.log("@4");
       channel.setAttribute("class", "celly");
       url.innerHTML = line[1];
       url.setAttribute("class", "celly");
@@ -252,11 +247,9 @@ function createChannelUrlMask(key) {
 function deleteCategory(category) {
   console.log("deleting category " + category);
   console.log("need to reverse safe spaces first though");
-  console.log("@a");
   sendDeleteCategory(category)
     .then((result) => sendWrite(result))
     .then(() => {
-      console.log("@c");
       // refreshing and updating values in frontend
       refresh("refreshed from file")
         .then(() => getValues("got values from data structure"))
@@ -269,11 +262,9 @@ function sendWrite() {
     const request = new XMLHttpRequest();
     request.onreadystatechange = () => {
       if (request.readyState === 4) {
-        console.log("@bb");
         resolve();
       }
     };
-    console.log("@b");
     request.open("POST", backendUrl + "writeFile");
     request.send();
   });
