@@ -2,12 +2,13 @@
 import json
 from pathlib import Path
 from collections import defaultdict
+from collections import OrderedDict
 
 # default value for path to stations.ini
 # TODO change path!
 iniPath = "/home/amelie/Downloads/stations.ini"
 # file structure that keeps track of categories and channels
-values=defaultdict(list)
+values=OrderedDict()
 
 def getPath():
     return iniPath

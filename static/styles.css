@@ -49,8 +49,6 @@ table {
 }
 
 p,th,td {
-    /*font-size: 18px;*/
-    line-height: 1.6;
     color: #868282;
     padding: 10px;
 }
@@ -62,14 +60,20 @@ td {
 	line-height: 22px;
 }
 
+textarea { width: 100%; }
+
+/* TODO move category labels to middle after correct trash button layout */
+
 .lefty {
     float: left;
+    padding:1%;
+    padding-top:2%;
 }
 
 .righty {
     float:right;
+    padding: 1%;
     margin: 0;
-    padding: 0;
 }
 
 .category {

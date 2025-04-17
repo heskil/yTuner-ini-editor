@@ -158,56 +158,123 @@ function createLastRow() {
   // adds last category row
   lastRow = table.insertRow();
   lastRow.setAttribute("id", "lastRowCatAdder");
-  let channel = lastRow.insertCell(0);
-  channel.setAttribute("id", "catAddCell");
+  let emptyCat = lastRow.insertCell(0);
+  emptyCat.setAttribute("id", "catAddCell");
+  emptyCat.setAttribute("colspan", "2");
   let url = lastRow.insertCell(1);
   url.setAttribute("class", "invisiCell");
   let butt = document.createElement("input");
   butt.setAttribute("id", "catButt");
   butt.setAttribute("type", "button");
-  butt.setAttribute("onclick", "addCategory()");
+  butt.setAttribute("onclick", 'addCategory("","")');
   butt.setAttribute("value", "+");
-  channel.appendChild(butt);
+  emptyCat.appendChild(butt);
   let label = document.createElement("label");
   label.setAttribute("for", "catButt");
   label.innerHTML = "+";
   label.setAttribute("id", "catButtLabel");
-  channel.appendChild(label);
+  emptyCat.appendChild(label);
 }
 
 function addRow(key, index) {
   let table = document.getElementById("bigTable");
   let row = table.insertRow(index);
   let category = row.insertCell(0);
-  let butt = document.createElement("input");
-  butt.setAttribute("class", "catButt");
-  butt.setAttribute("type", "button");
-  safeKey = safeSpaces(key);
-  butt.setAttribute("onclick", "deleteCategory('" + safeKey + "')");
-  butt.setAttribute("value", "trash");
+  let safeKey = safeSpaces(key);
+  category.setAttribute("contenteditable", "true");
 
-  let trash = document.createElement("img");
-  trash.setAttribute("class", "trash");
-  trash.setAttribute("src", "../static/trash.svg");
-
-  row.insertCell(1).setAttribute("class", "invisiCell");
+  // TODO onPress or keydown highlight table cell
 
   let catName = document.createElement("div");
   catName.setAttribute("class", "lefty");
-  let buttDiv = document.createElement("div");
-  buttDiv.setAttribute("class", "righty");
-  buttDiv.appendChild(trash);
-  buttDiv.appendChild(butt);
+  //catName.setAttribute("id", safeKey);
+  category.setAttribute("id", safeKey);
+
+  console.log("setting save button attributes");
+  console.log("id set to " + safeKey);
+
+  //let contentEdit = document.getElementById(safeKey);
+  //if (contentEdit == null) {
+  //  contentEdit = "";
+  //} else {
+  //  contentEdit = contentEdit.innerHTML;
+  // }
+  //console.log("textContent is " + contentEdit.textContent);
+  //console.log("its innerHTML is " + contentEdit.innerHTML);
+  //console.log("its string is " + contentEdit.string);
+
   catName.innerHTML = key;
   category.className = "category";
+  category.setAttribute("colspan", "2");
   category.appendChild(catName);
-  category.appendChild(buttDiv);
+  category.appendChild(
+    createButton("trash", "catButt", false, "deleteCategory('" + safeKey + "')")
+  );
+  category.appendChild(
+    createButton("save", "catButt", true, "addCategory('" + safeKey + "')")
+  );
+}
+/*"addCategory('" +
+safeKey +
+"," +
+"document.getElementById(" +
+safeKey +
+").innerText" +
+"')"*/
+
+function createButton(label, type, isLeft, onClickFunction) {
+  let butt = document.createElement("input");
+  butt.setAttribute("class", type);
+  butt.setAttribute("type", "button");
+  butt.setAttribute("onclick", onClickFunction);
+  butt.setAttribute("value", label);
+
+  let trash = document.createElement("img");
+  trash.setAttribute("class", type);
+  trash.setAttribute("src", "../static/trash.svg");
+  let buttDiv = document.createElement("div");
+  if (isLeft) {
+    buttDiv.setAttribute("class", "lefty");
+  } else {
+    buttDiv.setAttribute("class", "righty");
+  }
+
+  buttDiv.appendChild(trash);
+  buttDiv.appendChild(butt);
+
+  return buttDiv;
 }
 
-function addCategory() {
-  // TODO Promise for sending
+function addCategory(category, newCategory) {
   let placeholderKey = "newCategory" + categorycounter;
-  sendAddCategory(placeholderKey)
+
+  while (document.getElementById(placeholderKey)) {
+    console.log("trying placeholderkey " + placeholderKey);
+    categorycounter = categorycounter + 1;
+    placeholderKey = "newCategory" + categorycounter;
+  }
+
+  let cat = category;
+  let newCat = document.getElementById(category);
+  //console.log(
+  //  "newCat in addCategory for category " + category + " is " + newCat
+  //);
+
+  if (cat == "") {
+    cat = placeholderKey;
+  }
+  if (newCat == null) {
+    console.log("newCat was null");
+    newCat = "";
+  } else if (newCat.innerText == cat) {
+    console.log("newCat was " + newCat.innerText + ", same as old cat");
+    newCat = "";
+  } else {
+    console.log("newCat is " + newCat.innerText);
+    newCat = newCat.innerText;
+  }
+
+  sendAddCategory(cat, newCat)
     .then((result) => sendWrite(result))
     .then(() => {
       categorycounter = categorycounter + 1;
@@ -218,10 +285,6 @@ function addCategory() {
         .then(() => getValues("got values from data structure"))
         .then((result) => buildTable("adjusted table values", result));
     });
-}
-
-function editCategory() {
-  // TODO safespaces
 }
 
 function addChannelUrl() {
@@ -246,7 +309,6 @@ function createChannelUrlMask(key) {
 
 function deleteCategory(category) {
   console.log("deleting category " + category);
-  console.log("need to reverse safe spaces first though");
   sendDeleteCategory(category)
     .then((result) => sendWrite(result))
     .then(() => {
@@ -270,7 +332,11 @@ function sendWrite() {
   });
 }
 
-function sendAddCategory(category) {
+function sendAddCategory(category, newCategory) {
+  let cleanNewCat = newCategory.replace(/[\n\r\t]/gm, "");
+  console.log("wanted to change category " + category + " to " + newCategory);
+  console.log("cleaning returns " + cleanNewCat);
+
   return new Promise((resolve) => {
     const request = new XMLHttpRequest();
     request.onreadystatechange = () => {
@@ -284,8 +350,13 @@ function sendAddCategory(category) {
     // TODO comment back in if apostrophe breaks again
     //category = safeSpaces(category);
     console.log("adding category " + category);
+    let body = '{"category":"' + category + '"';
+    if (newCategory != "") {
+      body = body + ',"newCategory":"' + cleanNewCat + '"';
+    }
     request.setRequestHeader("Content-type", "application/json");
-    request.send('{"category":"' + category + '"}');
+    console.log("request body for add/edit cat is next");
+    request.send(body + "}");
   });
 }
 

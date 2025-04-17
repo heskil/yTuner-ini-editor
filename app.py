@@ -51,12 +51,15 @@ def addCategory():
     try:
         newCategory = json["newCategory"]
     except KeyError:
+        # catches case that no new category is passed, this can be intended
         print("adding new category, not renaming existing one")
     
+    print("[py] entering function")
     out = fileReader.addCategory(category,newCategory)
     if out:
         return "Added or edited category", 200
     else:
+        print("[py] error case reached")
         return "Attempted to edit a category that doesn't exist or create an existing one", 400
     
 # removes a category
