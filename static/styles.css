@@ -17,6 +17,24 @@ h1 {
     opacity: 0;
 }
 
+.catButt {
+    /*display:inline-block;*/
+    width: 30px;
+    height: 30px;
+    background-repeat: no-repeat;
+}
+
+.saveButton {
+    background:url('save.svg');
+    background-color: #c5c5c5;
+}
+
+.trashButton {
+    background:url('trash.svg');
+    background-color: #c5c5c5;
+
+}
+
 #catButtLabel {
     position: relative;
     left: 45%;
@@ -62,7 +80,6 @@ td {
 
 textarea { width: 100%; }
 
-/* TODO move category labels to middle after correct trash button layout */
 
 .lefty {
     float: left;

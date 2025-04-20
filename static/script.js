@@ -64,6 +64,11 @@ function getPath() {
 function setPath() {
   let div = document.getElementById("pathPopUp");
   var formData = new FormData(document.getElementById("pathForm"));
+  if (formData == null && formData == "") {
+    console.log("new file path was empty, not setting");
+    return;
+  }
+
   console.log("data from form is ");
   console.log(formData.entries("filepath"));
   console.log("path is being sent to backend, result tbd");
@@ -224,22 +229,23 @@ safeKey +
 
 function createButton(label, type, isLeft, onClickFunction) {
   let butt = document.createElement("input");
-  butt.setAttribute("class", type);
+  butt.classList.add(type);
   butt.setAttribute("type", "button");
   butt.setAttribute("onclick", onClickFunction);
-  butt.setAttribute("value", label);
+  //butt.setAttribute("value", label);
 
-  let trash = document.createElement("img");
-  trash.setAttribute("class", type);
-  trash.setAttribute("src", "../static/trash.svg");
   let buttDiv = document.createElement("div");
   if (isLeft) {
+    butt.classList.add("saveButton");
     buttDiv.setAttribute("class", "lefty");
   } else {
+    butt.classList.add("trashButton");
     buttDiv.setAttribute("class", "righty");
   }
 
-  buttDiv.appendChild(trash);
+  //butt.innerHTML = "<img src='../static/trash.svg'/>";
+
+  // buttDiv.appendChild(trash);
   buttDiv.appendChild(butt);
 
   return buttDiv;
